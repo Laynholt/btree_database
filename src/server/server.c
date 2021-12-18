@@ -1,5 +1,5 @@
-#include "tree.h"
-#include "hash.h"
+#include "../tree/tree.h"
+#include "../hash/hash.h"
 
 #include <stdio.h>
 
