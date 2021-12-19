@@ -240,6 +240,8 @@ static void split_root(Node* node, Btree* tree)
     free(tree->root);
 
     tree->root = tmp_root;
+
+    //print_tree(tree);
 }
 
 static void add_entity_to_node(Node* node, Entity* entity, Btree* tree)
@@ -311,18 +313,16 @@ static void check_fullness_node(Node* node, Btree* tree)
     // split all full nodes
     if (node->size == M)
     {
-        Node* parent = node;
+        Node* parent = node->parent;
 
-        // if parent has become full
-        while (parent != NULL && parent->size == M)
+        if (parent == NULL)
+        {   
+            split_root(node, tree);
+        }
+        else
         {
-            //root
-            if (parent->parent == NULL)
-                split_root(parent, tree);
-            //node
-            else
-                split_node(parent, tree);
-            parent = parent->parent;
+            split_node(node, tree);
+            check_fullness_node(parent, tree);
         }
     }
 }

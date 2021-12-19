@@ -1,5 +1,6 @@
 #include "../tree/tree.h"
 #include "../hash/hash.h"
+#include "../shrm/shrm.h"
 
 #include <stdio.h>
 
@@ -23,14 +24,14 @@ int main()
     create_tree(&tree);
 
     Entity entity;
-    
-    while(i++ < 10)
+
+    while(i++ < 30)
     {
         //printf("Enter key: ");
         scanf("%s", str);
         entity.key = hash(str);
         //entity.key = hash((unsigned char*)keys[i]);
-        printf("Your key is [%lu]\n", entity.key);
+        //printf("Your key is [%lu]\n", entity.key);
 
         //printf("Enter name: ");
         scanf("%s", entity.data.name);
@@ -48,7 +49,7 @@ int main()
     }
 
     print_tree(&tree);
-
+/*
     uint64_t k;
 
     printf("Key to delete: ");
@@ -62,6 +63,65 @@ int main()
     remove_entity(&tree, k);
 
     print_tree(&tree);
+*/
+/*    Node my_node;
+    printf("Node: %lu\n", sizeof(Node));
+    printf("Entity: %lu\n", sizeof(Entity));
+    printf("Node*: %lu\n", sizeof(Node*));
+    printf("uint32_t: %lu\n", sizeof(uint32_t));
+    
+    printf("M: %d\n", M);
+    
+    uint64_t a = M;
+    uint64_t b = sizeof(Node) + a * sizeof(Entity) + (a + 1) * sizeof(Node*) + 2 * sizeof(uint32_t);
+    printf("Res: %lu\n", sizeof(Node) + a * sizeof(Entity) + (a + 1) * sizeof(Node*) + 2 * sizeof(uint32_t));
+    printf("b: %lu\n", b);
+
+    printf("%lu\n", NODE_MAX_SIZE);
+
+    create_shared_memory();
+*/  
+    void* shm_ptr;
+    int32_t seg_id = create_shared_memory();
+    printf("\nID: %d\n", seg_id);
+
+    shm_ptr = attach_shared_memory(seg_id);
+    filling_shared_memory(seg_id, shm_ptr, tree.root);
+    
+    char c = '0';
+    while(c != '1')
+    {
+        scanf("%c", &c);
+    }
+
+    dettach_shared_memory(shm_ptr);
+    destroy_shared_memory(seg_id);
+
+
+  /* 
+    Node my_node;
+    void* shm_ptr;
+    int32_t seg_id = create_shared_memory();
+  
+    if (seg_id != -1)
+    {
+        shm_ptr = attach_shared_memory(seg_id);
+        filling_shared_memory(seg_id, shm_ptr, tree.root);
+        getting_from_shared_memory(seg_id, shm_ptr, &my_node);
+
+//        my_node.entities[0].key = 666;
+        for(uint16_t i = 0; i < my_node.size; ++i)
+        {
+            print_entity(&my_node.entities[i]);
+        }
+        free(my_node.entities);
+
+        dettach_shared_memory(shm_ptr);
+        destroy_shared_memory(seg_id);
+    }
+    */
+    print_tree(&tree);
+
     destroy_tree(&tree);
 
     return 0;
