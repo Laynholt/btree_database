@@ -1,10 +1,11 @@
 #include "shrm.h"
 #include <assert.h>
 
-int32_t create_shared_memory()
+int32_t create_shared_memory(uint64_t shm_size, uint32_t client_id)
 {
     int32_t segment_id;
-    key_t key = ftok("/home/layn", 0);
+    
+    key_t key = ftok("/home/layn/tmp.txt", client_id);
     if(key == -1)
     {
         printf("Cant create key!\n");
@@ -12,7 +13,7 @@ int32_t create_shared_memory()
         return -1;
     }
 
-    segment_id = shmget(key, NODE_MAX_SIZE + 2 * sizeof(uint32_t), IPC_CREAT | 0666);
+    segment_id = shmget(key, shm_size, IPC_CREAT | 0666);
     if (segment_id == -1)
     {
         printf("Cant create shared memory!\n");
@@ -57,7 +58,7 @@ int16_t dettach_shared_memory(void* shm_ptr)
     return ret_val;
 }
 
-int16_t filling_shared_memory(int32_t segment_id, void* shm_ptr, const Node* node)
+int16_t push_node_shared_memory(int32_t segment_id, void* shm_ptr, const Node* node)
 {
     size_t node_size = sizeof(Node);
     size_t uint_size = sizeof(uint32_t);
@@ -73,7 +74,7 @@ int16_t filling_shared_memory(int32_t segment_id, void* shm_ptr, const Node* nod
     return 1;
 }
 
-int16_t getting_from_shared_memory(int32_t segment_id, void* shm_ptr, Node* node)
+int16_t pull_node_shared_memory(int32_t segment_id, void* shm_ptr, Node* node)
 {
     size_t node_size = sizeof(Node);
     size_t uint_size = sizeof(uint32_t);
@@ -90,3 +91,14 @@ int16_t getting_from_shared_memory(int32_t segment_id, void* shm_ptr, Node* node
     return 1;
 }
 
+int16_t push_entity_shared_memory(int32_t segment_id, void* shm_ptr, const Entity* entity)
+{
+    memcpy(shm_ptr, entity, sizeof(Entity));
+    return 1;
+}
+
+int16_t pull_entity_shared_memory(int32_t segment_id, void* shm_ptr, Entity* entity)
+{
+    memcpy(entity, shm_ptr, sizeof(Entity));
+    return 1;
+}

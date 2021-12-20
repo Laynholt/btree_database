@@ -16,6 +16,7 @@ static int16_t remove_entity_from_leaf_node(Node* node, uint64_t key, uint16_t c
 static int16_t remove_entity_from_middle_node(Node* node, uint64_t key, uint16_t child_id, Btree* tree);
 
 static void print_node(Node* node, uint16_t offset);
+static void print_node_to_file(Node* node, uint16_t offset, FILE* file);
 static void repair_tree(Node* start_node, Btree* tree);
 
 
@@ -27,7 +28,12 @@ void create_tree(Btree* tree)
 
 void destroy_tree(Btree* tree)
 {
-    if (tree->root->is_leaf)
+    if (tree->root == NULL)
+    {
+        return;
+    }
+
+    else if (tree->root->is_leaf)
     {
         free(tree->root->entities);
         free(tree->root);
@@ -484,6 +490,49 @@ static void print_node(Node* node, uint16_t offset)
     }   
 }
 
+void print_tree_to_file(Btree* tree, char* path)
+{
+    FILE* file = fopen(path, "w");
+    
+    if (file == NULL)
+    {
+        perror("Cant creare file: ");
+        return;
+    }
+
+    if (tree->root) 
+    {
+        print_node_to_file(tree->root, 0, file);
+    }
+    else
+    {
+        fprintf(file, "Tree is empty.\n");
+        fclose(file);
+        return;
+    }
+
+    fclose(file);
+}
+
+static void print_node_to_file(Node* node, uint16_t offset, FILE* file)
+{
+    for(uint16_t i = 0; i < node->size; ++i)
+    {
+        for(uint16_t j = 0; j < offset; ++j)
+            fprintf(file, "\t");
+        fprintf(file, "Node id [%u], key [%lu], user name [%s]\n", node->id_node, node->entities[i].key, node->entities[i].data.name);
+    }
+    fprintf(file, "-------------------------------------\n");
+
+    if (!node->is_leaf)
+    {
+        for(uint16_t i = 0; i < node->size + 1; ++i)
+        {
+            print_node_to_file(node->childs[i], offset + 1, file);
+        }
+    }   
+}
+
 int16_t remove_entity(Btree* tree, uint64_t key)
 {
    if (tree->root->size == 0)
@@ -895,4 +944,24 @@ static int16_t remove_entity_from_middle_node(Node* node, uint64_t key, uint16_t
         // recursively removing
         return remove_entity_from_middle_node(right_child, key, entity_index + 1, tree);
     }
+}
+
+Node* find_node(Node* node, uint16_t node_id)
+{
+    if (node->id_node == node_id)
+        return node;
+
+    if (!node->is_leaf)
+    {
+        Node* _node = NULL;
+        for(uint16_t i = 0; i < node->size + 1; ++i)
+        {
+            _node = find_node(node->childs[i], node_id);
+            if (_node != NULL)
+            {
+                return _node;
+            }
+        }
+    }
+    return NULL;
 }
