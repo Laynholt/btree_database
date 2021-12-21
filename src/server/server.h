@@ -3,7 +3,7 @@
 
 #define SOCKET_NAME "my_socket_name"
 #define BUFFER_SIZE 30
-#define MAX_CLIENT_CONNECT 15
+#define MAX_CLIENT_CONNECT 3
 #define MAX_KEY_SIZE 40
 
 #define TRUE 1

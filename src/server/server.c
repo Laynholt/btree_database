@@ -244,7 +244,7 @@ static void* client_wrapper(void* arg)
     }
 
     close(cli->client_id);
-    printf("\nClient with id [%d] was disconnected!\n", cli->client_id);
+    printf("Client with id [%d] was disconnected!\n", cli->client_id);
     cli->is_empty = TRUE;
     cli->client_id = 0;
 
@@ -374,6 +374,12 @@ int main()
 
         if (was_found)
         {
+            char conn[] = "You was connected to the server!\n";
+            ret_val = write(data_socket, conn, 34);
+            if (ret_val == -1)
+            {
+                perror("Write error: ");
+            }
            pthread_create(&clients.clients[index].threads, NULL, client_wrapper, (void*)&clients.clients[index]);
         }
 
