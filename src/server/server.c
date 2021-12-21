@@ -37,6 +37,8 @@ static void* client_wrapper(void* arg)
     Client* cli = (Client*)arg;
     Shrm shrm_node, shrm_ent;
 
+    printf("Client with id [%d] was connected!\n", cli->client_id);
+
     shrm_node.seg_id = create_shared_memory(SHRM_NODE_MAX_SIZE, cli->client_id);
     shrm_ent.seg_id = create_shared_memory(SHRM_ENTITY_MAX_SIZE, cli->client_id + 100);
 
@@ -145,6 +147,7 @@ static void* client_wrapper(void* arg)
                 int32_t filehandle = open(path, O_RDONLY);
                 sendfile(cli->client_id, filehandle, NULL, size);
                 close(filehandle);
+                remove(path);
 
                 pthread_mutex_unlock(&mutex);
             }
@@ -297,6 +300,8 @@ int main()
     // create tree
     create_tree(&tree);
     read_data_from_file(str, &tree);
+
+    printf("Server was started!\n");
 
     // we dont have clients now
     clients.size = MAX_CLIENT_CONNECT;

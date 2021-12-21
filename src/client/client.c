@@ -137,12 +137,7 @@ int main()
                     }
                     str[size-1] = '\0';
                     
-                    int32_t filehandle = open("temp.txt", O_CREAT | O_WRONLY, 0666);
-                    write(filehandle, str, size - 1);
-                    close(filehandle);
-
                     printf("[Tree:]\n\n%s\n", str);
-
                     free(str);
                 }   
 
@@ -249,22 +244,4 @@ int main()
 
     close(data_socket);
     return 0;
-
-
-    /*Node my_node;
-    void* shm_ptr;
-    int32_t seg_id = create_shared_memory();
- 
-    shm_ptr = attach_shared_memory(seg_id);
-    getting_from_shared_memory(seg_id, shm_ptr, &my_node);
-
-    for(uint16_t i = 0; i < my_node.size; ++i)
-    {
-        print_entity(&my_node.entities[i]);
-    }
-    free(my_node.entities);
-
-    dettach_shared_memory(shm_ptr);
-   
-    return 0;*/
 }

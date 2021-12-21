@@ -661,34 +661,43 @@ static int16_t remove_entity_from_leaf_node(Node* node, uint64_t key, uint16_t c
         if (brother_size > T - 1)
         {
             Entity* node_entity, *brother_entity;
-            uint16_t given_size = brother_size - T - 1;
+            uint16_t given_size = brother_size - (T - 1);
 
             given_size = given_size > 1 ? (given_size / 2) : given_size;
 
             node_entity = (Entity*)malloc(sizeof(Entity) * (node->size + given_size));
             brother_entity = (Entity*)malloc(sizeof(Entity) * (brother_size - given_size));
 
-            // fill node
+            // left node with right brother
             if (child_id == 0)
             {
+                // fill node
                 memcpy(node_entity, node->entities, sizeof(Entity) * node->size);
                 memcpy(node_entity + node->size, &node->parent->entities[parent_entity_id], sizeof(Entity));
                 memcpy(node_entity + node->size + 1, brother->entities, sizeof(Entity) * (given_size - 1));
-            }
+            
+                // rewrite parent entity
+                memcpy(&node->parent->entities[parent_entity_id], &brother->entities[given_size - 1], sizeof(Entity));
 
+                // fill brother
+                memcpy(brother_entity, &brother->entities[given_size], sizeof(Entity) * (brother_size - given_size));
+            }
+            // right node with left brother
             else if (child_id > 0)
             {
-                memcpy(node_entity, brother->entities, sizeof(Entity) * (given_size - 1));
+                // fill node
+                memcpy(node_entity, brother->entities + brother_size - (given_size - 1), sizeof(Entity) * (given_size - 1));
                 memcpy(node_entity + given_size - 1, &node->parent->entities[parent_entity_id], sizeof(Entity));
                 memcpy(node_entity + given_size, node->entities, sizeof(Entity) * node->size);
+            
+                // rewrite parent entity
+                memcpy(&node->parent->entities[parent_entity_id], &brother->entities[brother_size - given_size], sizeof(Entity));
+
+                // fill brother
+                memcpy(brother_entity, brother->entities, sizeof(Entity) * (brother_size - given_size));
             }
 
-            // rewrite parent entity
-            memcpy(&node->parent->entities[parent_entity_id], &brother->entities[given_size - 1], sizeof(Entity));
-
-            // fill brother
-            memcpy(brother_entity, &brother->entities[given_size], sizeof(Entity) * (brother_size - given_size));
-        
+                    
             free(node->entities);
             free(brother->entities);
 
