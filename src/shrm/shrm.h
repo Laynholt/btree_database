@@ -14,7 +14,6 @@ typedef struct Shrm
     
 }Shrm;
 
-
 static const uint64_t m = M;
 static const uint64_t SHRM_NODE_MAX_SIZE = sizeof(Node) + m * sizeof(Entity) + 2 * sizeof(uint32_t); 
 static const uint64_t SHRM_ENTITY_MAX_SIZE = sizeof(Entity);

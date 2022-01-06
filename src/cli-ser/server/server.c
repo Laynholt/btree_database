@@ -130,7 +130,7 @@ static void* client_wrapper(void* arg)
             {
                 pthread_mutex_lock(&mutex);
                 
-                char* path = "server/print.txt";
+                char* path = "cli-ser/server/print.txt";
                 print_tree_to_file(&tree, path);
                
                 struct stat obj;
@@ -251,11 +251,6 @@ static void* client_wrapper(void* arg)
     return (void*)1;
 }
 
-static void print_entity(const Entity* entity)
-{
-    printf("Key - [%lu], Name - [%s], Surname - [%s], Age - [%u]\n", entity->key, entity->data.name, entity->data.surname, entity->data.age);
-}
-
 static void close_server()
 {
     is_closing = TRUE;
@@ -295,7 +290,7 @@ int main()
     if(atexit(close_server))
         printf("Atexit error.\n");
 
-    char str[] = "server/data.txt";
+    char str[] = "cli-ser/server/data.txt";
 
     // create tree
     create_tree(&tree);

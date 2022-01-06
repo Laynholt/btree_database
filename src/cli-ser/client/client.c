@@ -1,10 +1,5 @@
 #include "client.h"
 
-static void print_entity(const Entity* entity)
-{
-    printf("Key - [%lu], Name - [%s], Surname - [%s], Age - [%u]\n", entity->key, entity->data.name, entity->data.surname, entity->data.age);
-}
-
 int main()
 {
     struct sockaddr_un name;
@@ -32,7 +27,7 @@ int main()
     ret_val = connect(data_socket, (const struct sockaddr*) &name, sizeof(struct sockaddr_un));
     if (ret_val == -1) 
     {
-        fprintf(stderr, "Сервер выключен.\n");
+        fprintf(stderr, "Server is off.\n");
         return -1;
     }
 

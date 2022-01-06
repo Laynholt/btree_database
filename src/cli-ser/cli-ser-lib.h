@@ -1,5 +1,5 @@
-#ifndef _CLIENT_H_
-#define _CLIENT_H_
+#ifndef _CLI_SER_LIB_H_
+#define _CLI_SER_LIB_H_
 
 #define SOCKET_NAME "my_socket_name"
 #define BUFFER_SIZE 30
@@ -23,16 +23,9 @@
 #include <sys/sendfile.h>
 #include <fcntl.h>
 
-static void print_entity(const Entity* entity);
 
-typedef struct Client
-{
-    uint32_t client_id;
-    pthread_t threads;
+extern void print_entity(const Entity* entity);
 
-}Client;
-
-static Client clients;
 static int32_t connection_socket;
 
 #endif

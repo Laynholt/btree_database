@@ -5,7 +5,7 @@ int32_t create_shared_memory(uint64_t shm_size, uint32_t client_id)
 {
     int32_t segment_id;
     
-    key_t key = ftok("/home/layn/tmp.txt", client_id);
+    key_t key = ftok("shrm/shrm.h", client_id);
     if(key == -1)
     {
         printf("Cant create key!\n");

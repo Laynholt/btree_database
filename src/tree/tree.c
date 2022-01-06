@@ -4,6 +4,7 @@
 #define FALSE 0
 
 static uint16_t id = 0;
+static uint8_t is_incorrected_tree_degree = 0;
 
 static void destroy_node(Node* node);
 
@@ -24,6 +25,12 @@ void create_tree(Btree* tree)
 {
     tree->root = NULL;
     tree->tree_size = 0;
+
+    if (T < 2)
+    {
+        printf("Incorrected tree degree! Must be >=2!\n");
+        is_incorrected_tree_degree = 1;
+    }
 }
 
 void destroy_tree(Btree* tree)
@@ -75,6 +82,9 @@ static void destroy_node(Node* node)
 
 void add_entity(Btree* tree, Entity* entity)
 {
+    if (is_incorrected_tree_degree)
+        return;
+
     // Dont have element
     if (tree->root == NULL)
     {
