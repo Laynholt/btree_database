@@ -2,6 +2,7 @@
 
 #define TRUE 1
 #define FALSE 0
+#define GRAPHIC_SEPARATOR "--------------------------------------------------------------"
 
 static uint16_t id = 0;
 static uint8_t is_incorrected_tree_degree = 0;
@@ -19,6 +20,14 @@ static int16_t remove_entity_from_middle_node(Node* node, uint64_t key, uint16_t
 static void print_node(Node* node, uint16_t offset);
 static void print_node_to_file(Node* node, uint16_t offset, FILE* file);
 static void repair_tree(Node* start_node, Btree* tree);
+
+static void print_node_modern(Node* node, uint16_t offset);
+static void print_node_leaf_modern(Node* node, uint16_t offset);
+static void print_node_not_leaf_modern(Node* node, uint16_t offset);
+
+static void print_node_to_file_modern(Node* node, uint16_t offset, FILE* file);
+static void print_node_leaf_to_file_modern(Node* node, uint16_t offset, FILE* file);
+static void print_node_not_leaf_to_file_modern(Node* node, uint16_t offset, FILE* file);
 
 
 void create_tree(Btree* tree)
@@ -983,4 +992,144 @@ Node* find_node(Node* node, uint16_t node_id)
         }
     }
     return NULL;
+}
+
+void print_tree_modern(Btree* tree)
+{
+    if (tree->root) 
+    {
+        print_node_modern(tree->root, 0);
+    }
+    else
+    {
+        printf("Tree is empty.\n");
+        return;
+    } 
+
+}
+
+static void print_node_modern(Node* node, uint16_t offset)
+{
+    if (node->is_leaf)
+    {
+        print_node_leaf_modern(node, offset);
+    }
+    else
+    {
+        print_node_not_leaf_modern(node, offset);
+    }
+}
+
+static void print_node_leaf_modern(Node* node, uint16_t offset)
+{
+    for(uint16_t j = 0; j < offset; ++j)
+        printf("\t");
+    printf("%s\n", GRAPHIC_SEPARATOR);
+    
+    for(uint16_t i = 0; i < node->size; ++i)
+    {
+        for(uint16_t j = 0; j < offset; ++j)
+            printf("\t");
+        printf("| Node id [%u], key [%lu], user name [%s] |\n", node->id_node, node->entities[i].key, node->entities[i].data.name);
+    }
+
+    for(uint16_t j = 0; j < offset; ++j)
+        printf("\t");
+    printf("%s\n", GRAPHIC_SEPARATOR);
+}
+
+static void print_node_not_leaf_modern(Node* node, uint16_t offset)
+{
+    for(uint16_t i = 0; i < node->size; ++i)
+    {
+        print_node_modern(node->childs[i], offset + 1);
+        
+        for(uint16_t j = 0; j < offset; ++j)
+            printf("\t");
+        printf("%s\n", GRAPHIC_SEPARATOR);
+
+        for(uint16_t j = 0; j < offset; ++j)
+            printf("\t");
+        printf("| Node id [%u], key [%lu], user name [%s] |\n", node->id_node, node->entities[i].key, node->entities[i].data.name);
+    
+        for(uint16_t j = 0; j < offset; ++j)
+            printf("\t");
+        printf("%s\n", GRAPHIC_SEPARATOR);
+    }
+    print_node_modern(node->childs[node->size], offset + 1);
+}
+
+void print_tree_to_file_modern(Btree* tree, char* path)
+{
+    FILE* file = fopen(path, "w");
+    
+    if (file == NULL)
+    {
+        perror("Cant creare file: ");
+        return;
+    }
+
+    if (tree->root) 
+    {
+        print_node_to_file_modern(tree->root, 0, file);
+    }
+    else
+    {
+        fprintf(file, "Tree is empty.\n");
+        fclose(file);
+        return;
+    }
+
+    fclose(file);
+}
+
+static void print_node_to_file_modern(Node* node, uint16_t offset, FILE* file)
+{
+    if (node->is_leaf)
+    {
+        print_node_leaf_to_file_modern(node, offset, file);
+    }
+    else
+    {
+        print_node_not_leaf_to_file_modern(node, offset, file);
+    }
+}
+
+static void print_node_leaf_to_file_modern(Node* node, uint16_t offset, FILE* file)
+{
+    for(uint16_t j = 0; j < offset; ++j)
+        fprintf(file, "\t");
+    fprintf(file, "%s\n", GRAPHIC_SEPARATOR);
+    
+    for(uint16_t i = 0; i < node->size; ++i)
+    {
+        for(uint16_t j = 0; j < offset; ++j)
+            fprintf(file, "\t");
+        fprintf(file, "| Node id [%u], key [%lu], user name [%s] |\n", node->id_node, node->entities[i].key, node->entities[i].data.name);
+    }
+
+    for(uint16_t j = 0; j < offset; ++j)
+        fprintf(file, "\t");
+    fprintf(file, "%s\n", GRAPHIC_SEPARATOR);
+}
+
+static void print_node_not_leaf_to_file_modern(Node* node, uint16_t offset, FILE* file)
+{
+    for(uint16_t i = 0; i < node->size; ++i)
+    {
+        print_node_to_file_modern(node->childs[i], offset + 1, file);
+        
+        for(uint16_t j = 0; j < offset; ++j)
+            fprintf(file, "\t");
+        fprintf(file, "%s\n", GRAPHIC_SEPARATOR);
+
+        for(uint16_t j = 0; j < offset; ++j)
+            fprintf(file, "\t");
+        fprintf(file, "| Node id [%u], key [%lu], user name [%s] |\n", node->id_node, node->entities[i].key, node->entities[i].data.name);
+    
+        for(uint16_t j = 0; j < offset; ++j)
+            fprintf(file, "\t");
+        fprintf(file, "%s\n", GRAPHIC_SEPARATOR);
+    }
+    print_node_to_file_modern(node->childs[node->size], offset + 1, file);
 }

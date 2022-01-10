@@ -129,6 +129,16 @@ int main()
                     if (!strncmp(command, "print", 8))
                     {
                         int32_t size;
+                        uint8_t tree_output_type = 0;
+
+                        printf("Enter a tree view of the output:\n[simple - 0]\n[modern - 1]\n]->> ");
+                        scanf("%u", &tree_output_type);
+
+                        ret_val = write(data_socket, &tree_output_type, sizeof(uint8_t));
+                        if (ret_val == -1)
+                        {
+                            perror("Read error: ");
+                        }
 
                         // get file size
                         ret_val = read(data_socket, &size, sizeof(int32_t));

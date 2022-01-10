@@ -37,6 +37,8 @@ extern int16_t remove_entity(Btree* tree, uint64_t key);
 extern Node* find_node(Node* node, uint16_t node_id);
 extern Entity* find_entity(Btree* tree, uint64_t key);
 extern void print_tree(Btree* tree);
+extern void print_tree_modern(Btree* tree);
 extern void print_tree_to_file(Btree* tree, char* path);
+extern void print_tree_to_file_modern(Btree* tree, char* path);
 
 #endif

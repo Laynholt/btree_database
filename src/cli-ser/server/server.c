@@ -131,8 +131,17 @@ static void* client_wrapper(void* arg)
                 pthread_mutex_lock(&mutex);
                 
                 char* path = "cli-ser/server/print.txt";
-                print_tree_to_file(&tree, path);
-               
+                uint8_t output_type;
+
+                ret_val = read(cli->client_id, &output_type, sizeof(uint8_t));
+                if (ret_val == -1)
+                {
+                    perror("Read2 error: ");
+                }
+            
+                if (output_type == 0)   print_tree_to_file(&tree, path);
+                else                    print_tree_to_file_modern(&tree, path);
+
                 struct stat obj;
                 stat(path, &obj);
                 int32_t size = obj.st_size;
@@ -195,7 +204,7 @@ static void* client_wrapper(void* arg)
                 ret_val = read(cli->client_id, &t, sizeof(int32_t));
                 if (ret_val == -1)
                 {
-                    perror("Read2 error: ");
+                    perror("Read4 error: ");
                 }
 
                 if (t == 1)
@@ -217,7 +226,7 @@ static void* client_wrapper(void* arg)
                 ret_val = read(cli->client_id, key_str, MAX_KEY_SIZE);
                 if (ret_val == -1)
                 {
-                    perror("Read3 error: ");
+                    perror("Read5 error: ");
                 }
 
                 //key = hash(key_str);
