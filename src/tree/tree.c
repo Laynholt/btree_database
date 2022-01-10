@@ -492,13 +492,20 @@ void print_tree(Btree* tree)
 
 static void print_node(Node* node, uint16_t offset)
 {
+    for(uint16_t j = 0; j < offset; ++j)
+        printf("\t");
+    printf("%s\n", GRAPHIC_SEPARATOR);
+   
     for(uint16_t i = 0; i < node->size; ++i)
     {
         for(uint16_t j = 0; j < offset; ++j)
             printf("\t");
-        printf("Node id [%u], key [%lu], user name [%s]\n", node->id_node, node->entities[i].key, node->entities[i].data.name);
+        printf("| Node id [%u], key [%lu], user name [%s] |\n", node->id_node, node->entities[i].key, node->entities[i].data.name);
     }
-    printf("-------------------------------------\n");
+
+    for(uint16_t j = 0; j < offset; ++j)
+        printf("\t");
+    printf("%s\n", GRAPHIC_SEPARATOR);
 
     if (!node->is_leaf)
     {
@@ -535,13 +542,20 @@ void print_tree_to_file(Btree* tree, char* path)
 
 static void print_node_to_file(Node* node, uint16_t offset, FILE* file)
 {
+    for(uint16_t j = 0; j < offset; ++j)
+        fprintf(file, "\t");
+    fprintf(file, "%s\n", GRAPHIC_SEPARATOR);
+
     for(uint16_t i = 0; i < node->size; ++i)
     {
         for(uint16_t j = 0; j < offset; ++j)
             fprintf(file, "\t");
-        fprintf(file, "Node id [%u], key [%lu], user name [%s]\n", node->id_node, node->entities[i].key, node->entities[i].data.name);
+        fprintf(file, "| Node id [%u], key [%lu], user name [%s] |\n", node->id_node, node->entities[i].key, node->entities[i].data.name);
     }
-    fprintf(file, "-------------------------------------\n");
+    
+    for(uint16_t j = 0; j < offset; ++j)
+        fprintf(file, "\t");
+    fprintf(file, "%s\n", GRAPHIC_SEPARATOR);
 
     if (!node->is_leaf)
     {
